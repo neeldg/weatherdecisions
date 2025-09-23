@@ -1,0 +1,49 @@
+Kaholo Prediction Markets → Job
+
+How market is formed:
+
+Binary outcomes at expiration date: opposing end of the contract pays one another the difference.
+
+The market is formed by trading Yes/No contracts.
+
+This creates an order book and shows the price people are willing to pay for each contract.
+
+Because this pricing is everyone’s unique information, in theory the price of a given contract will indicate the probability of the event happening.
+
+Ex: buying a “Yes” contract is essentially showing the market a.k.a. saying the event will occur.
+
+Our opportunity: Volumes on prediction markets are tremendously low
+
+Further, the people currently on them are hyper probably retail degens.
+
+If we have any edge, a.k.a. can predict roughly rightmost events better than the avg. degen, we make money.
+
+Why not just bet on the fund directly?
+
+Realistically, our model won’t accurately get it to a ±1°F range (which the betting markets are).
+
+Taking a “big dick swing” exposure has no significant drawdown (e.g. if 1 is bought at 50¢, that means you have 100% gain but lose your $ if P(event) < 50%) → lose 1/3 times.
+
+In short, this is too lumpy, breakdown is quite stretched → super lumpy equity curve = tough to stomach.
+
+Solution: we make the markets
+
+Essentially, we are passive — instead of market taking (buying at market price) we have limit orders around our fair value.
+
+This way we are directionally neutral & make money in both directions.
+
+(Diagram with red: market orders, blue: fair value, green: our limit orders)
+
+When price deviates from fair value, it triggers a limit order in the direction of fair value.
+
+Essentially, you are saying that the fair value is accurate so any deviation is temporary and price should return to fair value.
+
+Close out your positions either on return to fair value or after a gain is returned.
+
+Ex: FV = 50% chance for temp in Austin 76–77°F
+
+Short limit triggered at 20% chance (= buying a No at 20c [i.e. No at 80c = Yes at 20c]).
+
+Returns to 50c.
+
+So net market value goes from 20c → 50c = profit.
