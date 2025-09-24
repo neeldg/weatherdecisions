@@ -1,11 +1,49 @@
-# Core libraries
-numpy
-pandas
-matplotlib
-scikit-learn
+# =========================
+# Core
+# =========================
+numpy>=1.26
+pandas>=2.2
+matplotlib>=3.8
+scikit-learn>=1.5
+scipy>=1.11
+tqdm>=4.66
 
-# Model
-xgboost
+# =========================
+# Modeling
+# =========================
+xgboost>=2.0
+# Optional: native quantiles & fast GBM
+lightgbm>=4.3
 
-# Optional (Jupyter notebook interface)
-jupyterlab
+# =========================
+# Weather + time-series data
+# =========================
+# Station observations (clean daily/hourly)
+meteostat>=1.6
+# Simple HTTP for APIs (NWS, Open-Meteo, etc.)
+requests>=2.32
+python-dateutil>=2.9
+pytz>=2024.1
+# Optional: high-res model/reanalysis (HRRR/GFS/ERA5) via xarray
+xarray>=2024.5
+dask>=2024.5
+s3fs>=2024.6.0
+# Reading GRIB2 via cfgrib (requires eccodes system lib installed separately)
+cfgrib>=0.9.14
+
+# =========================
+# Feature engineering helpers (optional)
+# =========================
+holidays>=0.56
+pandas-market-calendars>=4.4
+
+# =========================
+# Explainability / diagnostics (optional)
+# =========================
+shap>=0.45
+
+# =========================
+# Notebooks / dev
+# =========================
+jupyterlab>=4.2
+ipykernel>=6.29
