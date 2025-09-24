@@ -1,0 +1,122 @@
+Borremanns (call)
+
+1. Choose a short lookback window.
+2. Assume a normal distribution.
+3. Estimate mu and sigma from the window.
+4. Turn mu and sigma into range probabilities (use normal CDF).
+5. Define a fair value and a grid of bands around it.
+6. Compare model probabilities to market-implied probabilities.
+7. Trade the probability mismatch (size smaller when sigma is large).
+8. Use "finish" probability as a practical proxy for "hit" probability.
+9. Use mu for directional bias and sigma as a volatility filter.
+10. Run the loop every 10 or 30 minutes (update mu, sigma, probabilities, and positions).
+11. Caveat: minute-scale temperature changes are tiny—apply to forecast errors or market prices tied to weather.
+12. Caveat: normality is an approximation—check for fat tails; consider t-distribution or empirical quantiles if needed.
+13. Caveat: always enforce thresholds, costs/slippage, and risk limits to avoid trading on noise.
+
+Look at granularity of data we can get; check data, have a look back period:
+- last 10 minutes, last 30 minutes
+- assume a normal distribution 
+   - predict mean / standard distribution
+      - predict exact probability of temperature being in a given range
+      - set up a grid on either side of the fair value
+      - with standard deviation / main, can find area under normal distribution
+      - get the exact probability that we hit a fair value 
+          - take a short position; directionally meddling
+
+Model as a normal distribution - predict mean, standard deviation
+
+- XGBoost
+- Lyte GBM (calculate that temperature is in a given range)
+
+
+Calculate probability of everything split;
+- temperature exact probability between a particular temperature
+- set a limit (pricing contracts)
+- trade on contracts (you start building)
+- not going to make money off of a spread
+- bet on certain predictions
+- 
+
+
+Define scope
+1.1 Markets: e.g., natgas front, PJM load/LMP spreads, HDD/CDD futures.
+1.2 Geography: pick 3–10 cities/zones tied to that market.
+1.3 Horizon & targets: D+1 (add D+2 later); Tmax/Tmin and daily HDD/CDD (base 65°F).
+
+Gather data (historical, leakage-safe)
+2.1 Archived NWP forecasts (what was actually issued at the time).
+2.2 Observations (station daily Tmax/Tmin/Tavg).
+2.3 Normals/climatology (30-year daily normals).
+2.4 Market series aligned to your trade (next-day return, DA–RT spread, etc.).
+2.5 Optional exogenous: storage/inventory days, holidays, weekday/season flags, lagged returns.
+
+Align everything by decision timestamp
+3.1 For each forecast run and city, align features so a lead of D+1 predicts the next day’s observed outcome.
+3.2 Ensure market labels (e.g., next-day return) occur after the decision time.
+3.3 Drop any rows where inputs wouldn’t have been known then.
+
+Engineer features (weather model)
+4.1 Latest-run aggregates: T2m max/min/mean, RH, wind, MSLP.
+4.2 Run-to-run deltas (today’s forecast minus yesterday’s).
+4.3 Recent observations (e.g., yesterday’s Tmax/Tmin/Tavg).
+4.4 Calendar: day-of-week, day-of-year, month, holidays.
+4.5 Climatology anomaly: forecast Tavg minus normal Tavg.
+4.6 Labels: y_Tmax, y_Tmin, y_HDD, y_CDD.
+
+Build baselines (for honest comparison)
+5.1 Persistence (yesterday equals today).
+5.2 Climatology (normal for that date).
+5.3 Linear MOS (regression of obs on forecast + calendar).
+
+Train XGBoost for weather (per city and target)
+6.1 Use time-based cross-validation (walk-forward).
+6.2 Start: max_depth=4–6, n_estimators=400–1000, learning_rate=0.03–0.1.
+6.3 Use subsample≈0.8 and colsample_bytree≈0.8.
+6.4 Optimize MAE/RMSE; confirm improvement vs baselines and raw NWP.
+
+Add uncertainty (probabilistic)
+7.1 Produce P50 with XGBoost.
+7.2 Produce P10 and P90 via a quantile method (e.g., separate quantile regressors).
+7.3 Check coverage: ≈80% of truths within P10–P90; recalibrate if needed.
+
+Convert weather forecasts to tradeable signals
+8.1 Surprise vs normal: forecast HDD/CDD P50 − normal HDD/CDD.
+8.2 Optionally surprise vs official forecast.
+8.3 Aggregate city signals to market-relevant regions (load zones, pipeline hubs).
+
+Build market feature table
+9.1 Features: weather surprises, uncertainty width (P90−P10), season flags, weekday, lagged returns.
+9.2 Add storage/inventory markers and volatility proxy if used.
+9.3 Label: next-day market return or spread you’d trade.
+
+Train XGBoost for market mapping
+10.1 Use the same walk-forward protocol.
+10.2 Optimize regression loss on returns; optionally track directional accuracy.
+10.3 Keep a holdout period for final evaluation.
+
+Turn predictions into positions
+11.1 Position size ∝ predicted edge / uncertainty (smaller when P90−P10 is wide).
+11.2 Set entry/exit thresholds to avoid noise.
+11.3 Cap max exposure; include costs and slippage.
+
+Backtest honestly
+12.1 No look-ahead; only data known at decision time.
+12.2 Refit cadence monthly or quarterly.
+12.3 Report: CAGR, Sharpe, hit rate, turnover, max drawdown, exposure by season.
+
+Diagnose and improve
+13.1 Analyze error by season (winter HDD vs summer CDD).
+13.2 Analyze error in extremes (heat/cold waves).
+13.3 Use feature importance/partial dependence to sanity-check relationships.
+13.4 Try segmentation (separate summer/winter models) or ensembling multiple forecast models.
+
+Productionize
+14.1 Each forecast cycle: fetch data → build features → run weather XGB → run market XGB → produce signal.
+14.2 Log all inputs/outputs; store model versions and performance snapshots.
+14.3 Health checks: missing data, drift monitors, interval coverage, PnL guardrails.
+
+Governance and risk
+15.1 Define max position, stop-loss/VAR, and pause conditions (e.g., data gaps, out-of-bounds predictions).
+15.2 Maintain an audit trail (inputs, predictions, orders).
+15.3 Keep a changelog for model tweaks and parameter updates.
