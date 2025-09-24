@@ -50,6 +50,16 @@ daily = daily.rename(columns={
     "precipitation_sum":        "precip_sum"
 })
 
+# ---------- Rolling training window (last N years) ----------
+WINDOW_YEARS = 10  # <- change here if you want 5, 7, etc.
+
+last_date = daily["date"].max()
+cutoff_start = (last_date - pd.DateOffset(years=WINDOW_YEARS))
+# keep timezone; no normalize() so we don’t drop tz info
+daily = daily[daily["date"] >= cutoff_start].copy()
+
+print(f"Rolling window: {cutoff_start.date()} → {last_date.date()}   n_days={len(daily)}")
+
 # ---------- Targets: next day's Tmax and Tmin ----------
 daily["tmax_f_D1"] = daily["tmax_f"].shift(-1)
 daily["tmin_f_D1"] = daily["tmin_f"].shift(-1)
