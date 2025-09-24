@@ -2,3 +2,10 @@
 .venv/
 __pycache__/
 .ipynb_checkpoints/
+
+# Data & caches
+data/
+.cache/
+*.csv
+*.parquet
+*.feather
