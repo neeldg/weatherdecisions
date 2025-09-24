@@ -1,7 +1,11 @@
+# Core libraries
 numpy
 pandas
 matplotlib
 scikit-learn
-torch==2.2.0
-torchvision==0.17.0
-torchaudio==2.2.0
+
+# Model
+xgboost
+
+# Optional (Jupyter notebook interface)
+jupyterlab
