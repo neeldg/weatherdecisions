@@ -32,18 +32,11 @@ s3fs>=2024.6.0
 cfgrib>=0.9.14
 
 # =========================
-# Feature engineering helpers (optional)
+# Data access – Open-Meteo
 # =========================
-holidays>=0.56
-pandas-market-calendars>=4.4
+openmeteo-requests
+requests-cache
+retry-requests
+pyarrow>=15
 
-# =========================
-# Explainability / diagnostics (optional)
-# =========================
-shap>=0.45
-
-# =========================
-# Notebooks / dev
-# =========================
-jupyterlab>=4.2
-ipykernel>=6.29
+# ===
