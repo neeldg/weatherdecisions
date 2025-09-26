@@ -38,5 +38,8 @@ openmeteo-requests
 requests-cache
 retry-requests
 pyarrow>=15
-
+numpy
+scikit-learn
+xgboost
+joblib
 # ===
