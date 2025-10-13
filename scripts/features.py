@@ -19,7 +19,17 @@ def _ensure_numeric(df):
     return df
 
 def add_time_features(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
-    ts = pd.to_datetime(df[date_col])
+    ts = pd.to_datetime(df[date_col], utc=True)   # now tz-aware (UTC) for any input
+    try:
+    # convert to UTC and then drop tz info to get tz-naive datetime64[ns]
+        ts = ts.dt.tz_convert("UTC").dt.tz_localize(None)
+    except Exception:
+    # if tz_convert/tz_localize fails for any reason, attempt to drop tz directly
+        try:
+            ts = ts.dt.tz_localize(None)
+        except Exception:
+            # last resort: coerce to naive numpy datetime (may coerce invalids to NaT)
+            ts = pd.to_datetime(ts.values).astype("datetime64[ns]")
     out = df.copy()
     out["doy"] = ts.dt.dayofyear
     out["sin_doy"] = np.sin(2*np.pi*out["doy"]/365.25)
