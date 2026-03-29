@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>weatherdecisions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --text: #e8eaf0;
+      --green: #4af4a8;
+      --blue: #4a9ff4;
+      --amber: #f4a84a;
+      --border: rgba(232, 234, 240, 0.18);
+      --nav-bg: rgba(10, 12, 15, 0.85);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Syne", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    .wrap {
+      width: min(1100px, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 0;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 500;
+      color: var(--green);
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.55rem 1rem;
+      border: 0.5px solid var(--border);
+      color: var(--text);
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .btn-primary:hover {
+      background: rgba(74, 244, 168, 0.08);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* Hero */
+    .hero {
+      padding: clamp(3rem, 10vw, 5.5rem) 0 clamp(3.5rem, 8vw, 5rem);
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .hero h1 {
+      font-family: "Syne", sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.75rem, 5vw, 2.75rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0 0 1.75rem;
+      max-width: 42ch;
+      color: rgba(232, 234, 240, 0.88);
+      font-size: 1.05rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* Sections */
+    section {
+      padding: clamp(2.5rem, 6vw, 4rem) 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-family: "Syne", sans-serif;
+      font-weight: 600;
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      margin: 0 0 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* How it works */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step {
+      border: 0.5px solid var(--border);
+      padding: 1.1rem 1rem;
+      min-height: 100%;
+    }
+
+    .step-num {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.7rem;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.06em;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    /* Signals table */
+    .table-wrap {
+      overflow-x: auto;
+      border: 0.5px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    th {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(232, 234, 240, 0.65);
+      background: rgba(232, 234, 240, 0.03);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.mono-cell {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+
+    .sig-buy {
+      color: var(--green);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 0.82rem;
+    }
+
+    .sig-sell {
+      color: #f45a5a;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 0.82rem;
+    }
+
+    .sig-hold {
+      color: var(--amber);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 0.82rem;
+    }
+
+    /* Tech */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tech-card {
+      border: 0.5px solid var(--border);
+      padding: 1rem;
+    }
+
+    .tech-card strong {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    .tech-card p {
+      margin: 0.4rem 0 0;
+      font-size: 0.88rem;
+      color: rgba(232, 234, 240, 0.85);
+    }
+
+    /* Team */
+    .team-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .team-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 400px) {
+      .team-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .person {
+      border: 0.5px solid var(--border);
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .avatar {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--green);
+    }
+
+    .person:nth-child(2) .avatar { background: var(--blue); color: var(--bg); }
+    .person:nth-child(3) .avatar { background: var(--amber); color: var(--bg); }
+    .person:nth-child(4) .avatar { background: #c89cf4; color: var(--bg); }
+
+    .person-name {
+      margin: 0;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 1.5rem 0 2rem;
+      border-top: 0.5px solid var(--border);
+      margin-top: 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .footer-brand {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      color: var(--green);
+    }
+
+    .footer-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      color: rgba(232, 234, 240, 0.7);
+    }
+
+    .footer-right a {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <span class="brand">weatherdecisions/</span>
+      <a class="btn" href="https://github.com/neeldg/weatherdecisions" target="_blank" rel="noopener noreferrer">→ GitHub</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <h1>We compute fair value before Kalshi does.</h1>
+        <p>Probabilistic weather forecasting mapped to Kalshi contract pricing: we turn ensemble distributions into fair values for each contract before the market does.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/neeldg/weatherdecisions" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          <a class="btn btn-ghost" href="#how-it-works">How it works →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="wrap">
+        <h2 class="section-title">How it works</h2>
+        <div class="steps">
+          <article class="step">
+            <div class="step-num">01</div>
+            <p>Pull NWS ensemble forecast for Austin, TX</p>
+          </article>
+          <article class="step">
+            <div class="step-num">02</div>
+            <p>Fit a normal distribution — estimate mu and sigma</p>
+          </article>
+          <article class="step">
+            <div class="step-num">03</div>
+            <p>Use normal CDF to compute fair value for each Kalshi contract</p>
+          </article>
+          <article class="step">
+            <div class="step-num">04</div>
+            <p>Market-make around fair value with passive limit orders</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="signals">
+      <div class="wrap">
+        <h2 class="section-title">Signal output (illustrative)</h2>
+        <p style="margin: -0.5rem 0 1.25rem; font-size: 0.92rem; color: rgba(232,234,240,0.75); max-width: 52ch;">Sample fair values and signals for today. Numbers are illustrative and not live market data.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Contract</th>
+                <th>Fair Value</th>
+                <th>Kalshi Price</th>
+                <th>Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>HIGH 76–77°F</td>
+                <td class="mono-cell">52¢</td>
+                <td class="mono-cell">48¢</td>
+                <td class="sig-buy">BUY YES</td>
+              </tr>
+              <tr>
+                <td>HIGH ≥80°F</td>
+                <td class="mono-cell">61¢</td>
+                <td class="mono-cell">61¢</td>
+                <td class="sig-hold">HOLD</td>
+              </tr>
+              <tr>
+                <td>PRECIP &gt;0.10"</td>
+                <td class="mono-cell">28¢</td>
+                <td class="mono-cell">34¢</td>
+                <td class="sig-sell">SELL YES</td>
+              </tr>
+              <tr>
+                <td>WIND &gt;15mph</td>
+                <td class="mono-cell">34¢</td>
+                <td class="mono-cell">34¢</td>
+                <td class="sig-hold">HOLD</td>
+              </tr>
+              <tr>
+                <td>CDD &gt; 10</td>
+                <td class="mono-cell">75¢</td>
+                <td class="mono-cell">68¢</td>
+                <td class="sig-buy">BUY YES</td>
+              </tr>
+              <tr>
+                <td>HDD &gt; 5</td>
+                <td class="mono-cell">22¢</td>
+                <td class="mono-cell">28¢</td>
+                <td class="sig-sell">SELL YES</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="tech">
+      <div class="wrap">
+        <h2 class="section-title">Tech stack</h2>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <strong>pandas / numpy</strong>
+            <p>Data wrangling and HDD/CDD calculation</p>
+          </div>
+          <div class="tech-card">
+            <strong>scipy</strong>
+            <p>Normal CDF for fair value computation</p>
+          </div>
+          <div class="tech-card">
+            <strong>scikit-learn</strong>
+            <p>Distribution fitting</p>
+          </div>
+          <div class="tech-card">
+            <strong>Kalshi API</strong>
+            <p>Contract lookup and order placement</p>
+          </div>
+          <div class="tech-card">
+            <strong>SQLite</strong>
+            <p>Local API response cache</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <div class="wrap">
+        <h2 class="section-title">Team</h2>
+        <div class="team-row">
+          <div class="person">
+            <div class="avatar" aria-hidden="true">ND</div>
+            <p class="person-name">Neel Dutta Gupta</p>
+          </div>
+          <div class="person">
+            <div class="avatar" aria-hidden="true">MO</div>
+            <p class="person-name">Malachy O'Donnabhain</p>
+          </div>
+          <div class="person">
+            <div class="avatar" aria-hidden="true">ZR</div>
+            <p class="person-name">Zain Radwan</p>
+          </div>
+          <div class="person">
+            <div class="avatar" aria-hidden="true">MT</div>
+            <p class="person-name">Mehdi Touhami</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span class="footer-brand">weatherdecisions/</span>
+      <div class="footer-right">
+        <a href="https://github.com/neeldg/weatherdecisions" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span>Not financial advice.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
